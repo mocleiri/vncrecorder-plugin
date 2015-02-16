@@ -72,7 +72,7 @@ public class VncRecorderBuildWrapper extends BuildWrapper {
 		this.vncServ = vncServ;
 		this.vncPasswFilePath = vncPasswFilePath;
 		this.setDisplay  = setDisplay;
-		this.removeIfSuccessful = removeIfSuccessful;
+		this.setRemoveIfSuccessful(removeIfSuccessful);
 		this.setOutFileName(outFileName);
 	}
 
@@ -82,8 +82,12 @@ public class VncRecorderBuildWrapper extends BuildWrapper {
 	}
 
 
-	public void setOutFileName(String outFileName) {
-		this.outFileName = outFileName;
+	public void setOutFileName(String outFileName)
+	{
+		if (outFileName == null || outFileName.isEmpty() || outFileName.equalsIgnoreCase("null"))
+			this.outFileName = "${JOB_NAME}_${BUILD_NUMBER}";
+		else
+			this.outFileName = outFileName;
 	}
 
 
@@ -116,8 +120,12 @@ public class VncRecorderBuildWrapper extends BuildWrapper {
 	}
 
 
-	public void setRemoveIfSuccessful(Boolean removeIfSuccessful) {
-		this.removeIfSuccessful = removeIfSuccessful;
+	public void setRemoveIfSuccessful(Boolean removeIfSuccessful) 
+	{
+		if (removeIfSuccessful == null)
+			this.removeIfSuccessful = false;
+		else
+			this.removeIfSuccessful = removeIfSuccessful;
 	}
 
 
@@ -200,7 +208,7 @@ public class VncRecorderBuildWrapper extends BuildWrapper {
 				recordState.cancel(true);
 				Thread.sleep(1000);
 
-				if ((removeIfSuccessful && outFileSwf.exists()) && (build.getResult() == Result.SUCCESS || build.getResult() == null)  )
+				if ((removeIfSuccessful && outFileSwf.exists()) && (build == null || build.getResult() == Result.SUCCESS || build.getResult() == null)  )
 				{
 					vncLogger.info("Build successful: Removing video file " + outFileSwf.getAbsolutePath() + " \n");
 					outFileSwf.delete();
